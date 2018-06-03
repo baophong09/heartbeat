@@ -11,6 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return 'Welcome!';
+Route::prefix('v1')->group(function() {
+    Route::post('/user/login', function() {
+        dd('hello');
+    });
+
+    Route::group(['middleware' => 'jwt-auth'], function () {
+        Route::get('user/me', 'UserController@me');
+    });
 });

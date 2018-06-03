@@ -1,21 +1,37 @@
 import React, { Component } from 'react';
-import logo from './assets/images/logo.svg';
 import './assets/css/App.css';
+import {connectGlobalState} from 'react-state-util';
+import Api from "./services/Api";
+import Login from "./pages/user/Login";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+    state = {}
+    
+    async componentWillMount() {
+        let response = await Api.get('user/me');
+
+        if (response.result && !response.error) {
+            this.setGlobalState({
+                user: response.result
+            });
+        } else {
+            this.setGlobalState({
+                user: null
+            });
+        }
+    }
+
+    render() {
+
+        let {user} = this.globalState;
+
+        return (
+            <div id="heartbeat">
+                {user ? <Dashboard /> : <Login />}
+            </div>
+        );
+    }
 }
 
-export default App;
+export default connectGlobalState(App);
